@@ -1,23 +1,25 @@
-{ lib, stdenvNoCC, writeShellScript, quickshell, brightnessctl }:
+{ lib, stdenvNoCC, writeShellScript, quickshell, brightnessctl, cliphist, wl-clipboard, hyprpicker }:
 
 let
   qs = lib.getExe' quickshell "qs";
 
-  # `misland` runs the shell; `misland toggle|open|close` and
-  # `misland launcher [toggle|open|close]` drive the running one.
+  # `misland` runs the shell (a second start is a no-op, so it can sit in the
+  # Hyprland config). Subcommands drive the running instance.
   launcher = writeShellScript "misland" ''
-    export PATH=${lib.makeBinPath [ brightnessctl ]}:$PATH
+    export PATH=${lib.makeBinPath [ brightnessctl cliphist wl-clipboard hyprpicker ]}:$PATH
     config=@out@/share/misland
     case "''${1:-}" in
       toggle|open|close) exec ${qs} ipc -p "$config" call notch "$1" ;;
-      launcher) exec ${qs} ipc -p "$config" call launcher "''${2:-toggle}" ;;
+      launcher|clipboard) exec ${qs} ipc -p "$config" call "$1" "''${2:-toggle}" ;;
+      color) exec ${qs} ipc -p "$config" call color pick ;;
+      "") exec ${qs} -n -p "$config" ;;
       *) exec ${qs} -p "$config" "$@" ;;
     esac
   '';
 in
 stdenvNoCC.mkDerivation {
   pname = "misland";
-  version = "0.5.0";
+  version = "0.6.0";
 
   src = ../shell;
   dontBuild = true;

@@ -21,7 +21,7 @@
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
-          packages = [ pkgs.quickshell pkgs.brightnessctl ];
+          packages = with pkgs; [ quickshell brightnessctl cliphist wl-clipboard hyprpicker ];
           # Make the UI fonts visible without installing them system-wide.
           FONTCONFIG_FILE = pkgs.writeText "misland-fonts.conf" ''
             <?xml version="1.0"?>

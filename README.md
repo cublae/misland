@@ -47,12 +47,23 @@ history lives in the notch.
 **Launcher.** On a key binding, the notch opens into an app search. Type,
 use the arrows, press Enter.
 
+**Clipboard.** On a key binding, the notch opens into the clipboard history
+(cliphist), with image thumbnails. Type to filter, Enter copies the entry
+back, Delete removes it.
+
+**Colour picker.** Pick a colour anywhere on screen (hyprpicker); it is
+copied, and the notch shows a swatch with the value.
+
+Both are also buttons in the panel header.
+
 ## Requirements
 
 - Hyprland, with either a Lua (0.55+) or a hyprlang config
 - Quickshell 0.3 or newer
 - PipeWire, NetworkManager and BlueZ for the audio, Wi-Fi and Bluetooth parts
 - `brightnessctl` for the brightness slider
+- `cliphist` and `wl-clipboard` for the clipboard history, `hyprpicker` for
+  the colour picker
 - Fonts: Inter and Material Symbols Rounded
 
 UPower is not needed: the battery is read from sysfs.
@@ -60,6 +71,9 @@ UPower is not needed: the battery is read from sysfs.
 ## Installation
 
 ### Nix flake with home-manager
+
+The Nix package bundles `brightnessctl`, `cliphist`, `wl-clipboard` and
+`hyprpicker`.
 
 ```nix
 # flake.nix
@@ -82,6 +96,11 @@ programs.misland = {
 The module installs the package and the fonts, writes
 `~/.config/misland/config.json` and starts a systemd user service.
 
+To start Misland from the Hyprland config instead, set
+`systemd.enable = false` and add `misland` to your autostart (see below).
+Starting it again while it runs does nothing, so it is safe on config
+reloads.
+
 Turn off any other notification daemon first (mako, dunst, swaync, fnott).
 Only one process can own `org.freedesktop.Notifications`. The module warns
 if one of them is enabled.
@@ -102,8 +121,12 @@ Start it from your Hyprland config. Settings go in
 Lua config:
 
 ```lua
+hl.exec_cmd("misland")   -- autostart, unless the systemd service is on
+
 hl.bind("SUPER + N",     hl.dsp.exec_cmd("misland toggle"))
 hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("misland launcher"))
+hl.bind("SUPER + V",     hl.dsp.exec_cmd("misland clipboard"))
+hl.bind("SUPER + C",     hl.dsp.exec_cmd("misland color"))
 
 -- Misland animates its own surfaces.
 hl.layer_rule({
@@ -116,8 +139,12 @@ hl.layer_rule({
 hyprlang config:
 
 ```ini
+exec-once = misland
+
 bind = SUPER, N, exec, misland toggle
 bind = SUPER, SPACE, exec, misland launcher
+bind = SUPER, V, exec, misland clipboard
+bind = SUPER, C, exec, misland color
 ```
 
 Misland detects which syntax the running Hyprland uses when it switches
@@ -129,6 +156,8 @@ workspaces or logs out.
 misland                               run the shell
 misland toggle | open | close         the notch panel
 misland launcher [toggle|open|close]  the app launcher
+misland clipboard [toggle|open|close] the clipboard history
+misland color                         pick a colour from the screen
 ```
 
 Without the wrapper, use Quickshell IPC:
@@ -136,6 +165,8 @@ Without the wrapper, use Quickshell IPC:
 ```sh
 qs ipc -p /path/to/misland/shell call notch toggle
 qs ipc -p /path/to/misland/shell call launcher toggle
+qs ipc -p /path/to/misland/shell call clipboard toggle
+qs ipc -p /path/to/misland/shell call color pick
 ```
 
 ## Options
@@ -173,6 +204,9 @@ restart.
 | `edges.persistentWorkspaces` | `5` | Workspaces 1..N are always listed, even when empty. |
 | `launcher.maxResults` | `7` | Rows shown in the launcher. |
 | `launcher.terminal` | `["kitty", "-e"]` | Prefix for desktop entries with `Terminal=true`. |
+| `clipboard.watch` | `true` | Record clipboard history (`wl-paste --watch cliphist store`). Turn off if something else already feeds cliphist. |
+| `clipboard.maxItems` | `100` | Entries listed in the clipboard view. |
+| `colorPicker.format` | `"hex"` | Format the colour picker copies: `hex`, `rgb`, `hsl`, `hsv` or `cmyk`. |
 | `animation.spring` | `3.2` | Spring stiffness. |
 | `animation.damping` | `0.28` | Spring damping; lower values bounce more. |
 
@@ -181,7 +215,7 @@ home-manager also has:
 | Option | Default | Description |
 |---|---|---|
 | `programs.misland.package` | this flake's package | The Misland package. |
-| `programs.misland.systemd.enable` | `true` | Run Misland as a systemd user service. |
+| `programs.misland.systemd.enable` | `true` | Run Misland as a systemd user service. Turn off to start it from the Hyprland config. |
 | `programs.misland.systemd.target` | `"graphical-session.target"` | Target that starts and stops it. |
 
 ## Project layout
@@ -195,13 +229,14 @@ shell/
   config/              Config (reads config.json), Theme
   components/          Icon, Label, Card, IconButton, Tile, PillSlider, ListRow
   services/            Time, Audio, Brightness, Battery, Media, SysStats, Apps,
-                       Hypr, BtIcons, Notifications (daemon), Activity
+                       Hypr, BtIcons, Clipboard, ColorPicker,
+                       Notifications (daemon), Activity
   modules/             Calendar, MediaCard, QuickSettings, WifiMenu,
                        BluetoothMenu, Stats, PowerButtons, NotificationList
   notifications/       corner popup panel, NotificationCard
   edges/               CornerPanel, CornerShape, Workspaces, Tray
   notch/               Notch window and shape; collapsed, expanded,
-                       live-activity and launcher views
+                       live-activity, launcher and clipboard views
 ```
 
 ## Development
@@ -211,7 +246,7 @@ nix develop
 qs -p shell          # runs from the source tree and reloads on save
 ```
 
-The dev shell provides Quickshell, `brightnessctl` and the fonts without
+The dev shell provides Quickshell, the helper tools and the fonts without
 installing them system-wide. `$MISLAND_CONFIG` points the shell at a
 different config file.
 

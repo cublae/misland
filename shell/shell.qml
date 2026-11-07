@@ -8,6 +8,7 @@ import qs.config
 import qs.edges
 import qs.notch
 import qs.notifications
+import qs.services
 
 ShellRoot {
     id: root
@@ -66,16 +67,30 @@ ShellRoot {
     IpcHandler {
         target: "notch"
 
-        function toggle(): void { NotchState.expanded = !NotchState.expanded; }
-        function open(): void { NotchState.expanded = true; }
+        function toggle(): void { NotchState.toggle("panel"); }
+        function open(): void { NotchState.show("panel"); }
         function close(): void { NotchState.close(); }
     }
 
     IpcHandler {
         target: "launcher"
 
-        function toggle(): void { NotchState.launcher = !NotchState.launcher; }
-        function open(): void { NotchState.launcher = true; }
+        function toggle(): void { NotchState.toggle("launcher"); }
+        function open(): void { NotchState.show("launcher"); }
         function close(): void { NotchState.close(); }
+    }
+
+    IpcHandler {
+        target: "clipboard"
+
+        function toggle(): void { NotchState.toggle("clipboard"); }
+        function open(): void { NotchState.show("clipboard"); }
+        function close(): void { NotchState.close(); }
+    }
+
+    IpcHandler {
+        target: "color"
+
+        function pick(): void { ColorPicker.pick(); }
     }
 }

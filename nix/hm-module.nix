@@ -166,6 +166,25 @@ in
             };
           };
 
+          clipboard = {
+            watch = mkOption {
+              type = types.bool;
+              default = true;
+              description = "Record clipboard history (wl-paste --watch cliphist store). Turn off if something else already feeds cliphist.";
+            };
+            maxItems = mkOption {
+              type = types.ints.positive;
+              default = 100;
+              description = "Entries listed in the clipboard view.";
+            };
+          };
+
+          colorPicker.format = mkOption {
+            type = types.enum [ "hex" "rgb" "hsl" "hsv" "cmyk" ];
+            default = "hex";
+            description = "Format the colour picker copies.";
+          };
+
           animation = {
             spring = mkOption {
               type = types.float;
@@ -186,7 +205,10 @@ in
       enable = mkOption {
         type = types.bool;
         default = true;
-        description = "Start Misland as a systemd user service with the graphical session.";
+        description = 
+          Start Misland as a systemd user service with the graphical session.
+          Turn off to start it from the Hyprland config instead (`misland`).
+        ;
       };
       target = mkOption {
         type = types.str;

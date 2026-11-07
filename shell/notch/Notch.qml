@@ -13,6 +13,7 @@ PanelWindow {
     readonly property bool expanded: NotchState.expanded
     readonly property bool hovered: mouse.containsMouse
     readonly property bool launcher: NotchState.launcher
+    readonly property bool clipboard: NotchState.clipboard
     readonly property bool open: NotchState.open
     readonly property bool showingActivity: !open && Activity.current !== null
 
@@ -25,13 +26,15 @@ PanelWindow {
     readonly property real expandedHeight: expandedView.implicitHeight + 2 * padding
     readonly property real launcherWidth: launcherView.implicitWidth + 2 * padding
     readonly property real launcherHeight: launcherView.implicitHeight + 2 * padding
+    readonly property real clipboardWidth: clipboardView.implicitWidth + 2 * padding
+    readonly property real clipboardHeight: clipboardView.implicitHeight + 2 * padding
 
     // Room for the spring to overshoot without hitting the window edge.
     readonly property real overshoot: 1.12
 
     anchors.top: true
-    implicitWidth: Math.ceil((Math.max(expandedWidth, launcherWidth) + 2 * 16 * s) * overshoot)
-    implicitHeight: Math.ceil(Math.max(expandedHeight, launcherHeight) * overshoot)
+    implicitWidth: Math.ceil((Math.max(expandedWidth, launcherWidth, clipboardWidth) + 2 * 16 * s) * overshoot)
+    implicitHeight: Math.ceil(Math.max(expandedHeight, launcherHeight, clipboardHeight) * overshoot)
     color: "transparent"
 
     exclusionMode: ExclusionMode.Normal
@@ -68,10 +71,12 @@ PanelWindow {
         color: Theme.background
 
         bodyWidth: win.launcher ? win.launcherWidth
+            : win.clipboard ? win.clipboardWidth
             : win.expanded ? win.expandedWidth
             : win.showingActivity ? win.activityWidth
             : win.collapsedWidth + (win.hovered ? 10 * win.s : 0)
         bodyHeight: win.launcher ? win.launcherHeight
+            : win.clipboard ? win.clipboardHeight
             : win.expanded ? win.expandedHeight
             : win.showingActivity ? win.activityHeight
             : win.collapsedHeight + (win.hovered ? 3 * win.s : 0)
@@ -90,11 +95,11 @@ PanelWindow {
             width: shape.bodyWidth
             // When expanded, only the header row closes the notch so the
             // modules below can handle their own clicks.
-            height: win.launcher ? 0
+            height: win.launcher || win.clipboard ? 0
                 : win.expanded ? win.padding + expandedView.headerHeight : shape.bodyHeight
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-            onClicked: NotchState.expanded = !NotchState.expanded
+            onClicked: NotchState.toggle("panel")
         }
 
         FocusScope {
@@ -163,6 +168,27 @@ PanelWindow {
                 Behavior on opacity {
                     NumberAnimation {
                         duration: win.launcher ? 220 : 100
+                        easing.type: Easing.OutCubic
+                    }
+                }
+                Behavior on scale { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+            }
+
+            ClipboardView {
+                id: clipboardView
+
+                focus: win.clipboard
+
+                anchors.horizontalCenter: parent.horizontalCenter
+                y: win.padding
+                opacity: win.clipboard ? 1 : 0
+                visible: opacity > 0
+                scale: win.clipboard ? 1 : 0.92
+                transformOrigin: Item.Top
+
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: win.clipboard ? 220 : 100
                         easing.type: Easing.OutCubic
                     }
                 }

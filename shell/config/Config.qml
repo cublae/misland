@@ -27,6 +27,8 @@ Singleton {
     property alias activities: adapter.activities
     property alias edges: adapter.edges
     property alias launcher: adapter.launcher
+    property alias clipboard: adapter.clipboard
+    property alias colorPicker: adapter.colorPicker
     property alias animation: adapter.animation
 
     FileView {
@@ -100,6 +102,18 @@ Singleton {
                 property int maxResults: 7
                 // Prefix for desktop entries with Terminal=true.
                 property list<string> terminal: ["kitty", "-e"]
+            }
+
+            property JsonObject clipboard: JsonObject {
+                // Record clipboard history with `wl-paste --watch cliphist store`.
+                // Turn off if something else already feeds cliphist.
+                property bool watch: true
+                property int maxItems: 100
+            }
+
+            property JsonObject colorPicker: JsonObject {
+                // hyprpicker output format: hex, rgb, hsl, hsv or cmyk.
+                property string format: "hex"
             }
 
             property JsonObject animation: JsonObject {

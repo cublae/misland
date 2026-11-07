@@ -10,7 +10,7 @@ import qs.notch
 // (volume, brightness, charger, Bluetooth devices, track changes).
 //
 // `current` is a plain object:
-//   { kind, icon, art, title, subtitle, value (0..1 or -1), valueText }
+//   { kind, icon, art, color, title, subtitle, value (0..1 or -1), valueText }
 Singleton {
     id: root
 
@@ -21,7 +21,7 @@ Singleton {
 
     function show(activity: var, ms: int): void {
         if (!armed || NotchState.open) return;
-        current = Object.assign({ icon: "", art: "", title: "", subtitle: "", value: -1, valueText: "" }, activity);
+        current = Object.assign({ icon: "", art: "", color: "", title: "", subtitle: "", value: -1, valueText: "" }, activity);
         hide.interval = ms;
         hide.restart();
     }

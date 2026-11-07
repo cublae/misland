@@ -8,6 +8,7 @@ import qs.services
 //   [icon]  ━━━━━━━━━━  45%            volume / brightness
 //   [icon]  Charging              97%  charger
 //   [art]   Title · Artist      ▂▅▃    track (always one line)
+//   (●)     #1E90FF · Copied               colour picker
 Item {
     id: root
 
@@ -32,7 +33,19 @@ Item {
                 name: root.activity?.icon ?? ""
                 size: 19 * Theme.s
                 filled: true
-                visible: art.status !== Image.Ready
+                visible: art.status !== Image.Ready && !(root.activity?.color)
+            }
+
+            // Swatch for picked colours.
+            Rectangle {
+                anchors.centerIn: parent
+                width: 16 * Theme.s
+                height: width
+                radius: width / 2
+                visible: (root.activity?.color ?? "") !== ""
+                color: root.activity?.color || "transparent"
+                border.width: 1
+                border.color: Qt.alpha(Theme.text, 0.35)
             }
 
             ClippingRectangle {

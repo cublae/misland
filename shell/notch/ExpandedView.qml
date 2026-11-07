@@ -1,10 +1,11 @@
 import QtQuick
+import qs.components
 import qs.config
 import qs.modules
 import qs.services
 
 // Expanded notch:
-//   time / date                     power buttons
+//   time / date          colour picker, clipboard | power
 //   calendar | media
 //            | Wi-Fi  Bluetooth
 //            | volume, brightness
@@ -53,9 +54,38 @@ Item {
                 }
             }
 
-            PowerButtons {
+            // Tools, then power, separated by a thin divider.
+            Row {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
+                spacing: 2 * Theme.s
+
+                IconButton {
+                    anchors.verticalCenter: parent.verticalCenter
+                    icon: "colorize"
+                    iconSize: 19 * Theme.s
+                    iconColor: Theme.textDim
+                    onClicked: ColorPicker.pick()
+                }
+
+                IconButton {
+                    anchors.verticalCenter: parent.verticalCenter
+                    icon: "content_paste"
+                    iconSize: 19 * Theme.s
+                    iconColor: Theme.textDim
+                    onClicked: NotchState.show("clipboard")
+                }
+
+                Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 1
+                    height: 18 * Theme.s
+                    color: Theme.track
+                }
+
+                PowerButtons {
+                    anchors.verticalCenter: parent.verticalCenter
+                }
             }
         }
 

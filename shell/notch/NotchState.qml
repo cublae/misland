@@ -3,18 +3,25 @@ pragma Singleton
 import QtQuick
 import Quickshell
 
-// What the notch is showing. The panel and the launcher are exclusive:
-// opening one closes the other.
+// What the open notch is showing: "" (collapsed), "panel", "launcher" or
+// "clipboard". Only one view is open at a time.
 Singleton {
-    property bool expanded: false
-    property bool launcher: false
-    readonly property bool open: expanded || launcher
+    property string view: ""
 
-    onExpandedChanged: if (expanded) launcher = false
-    onLauncherChanged: if (launcher) expanded = false
+    readonly property bool open: view !== ""
+    readonly property bool expanded: view === "panel"
+    readonly property bool launcher: view === "launcher"
+    readonly property bool clipboard: view === "clipboard"
+
+    function show(name: string): void {
+        view = name;
+    }
+
+    function toggle(name: string): void {
+        view = view === name ? "" : name;
+    }
 
     function close(): void {
-        expanded = false;
-        launcher = false;
+        view = "";
     }
 }
