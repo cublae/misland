@@ -34,6 +34,7 @@ stdenvNoCC.mkDerivation {
   meta = {
     description = "MacBook-style notch shell for Hyprland, built on Quickshell";
     mainProgram = "misland";
+    license = lib.licenses.mit;
     platforms = lib.platforms.linux;
   };
 }

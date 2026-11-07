@@ -224,3 +224,7 @@ different config file.
 - After many live reloads during development, Quickshell sometimes does not
   exit when asked. The systemd service stops it after three seconds; when
   running by hand, `pkill -9 quickshell` helps.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
