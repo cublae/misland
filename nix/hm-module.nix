@@ -151,6 +151,16 @@ in
               default = 5;
               description = "Workspaces 1..N are always listed, even when empty.";
             };
+            showOnSwitch = mkOption {
+              type = types.bool;
+              default = true;
+              description = "Pop the workspaces out of their corner for a moment on every workspace switch.";
+            };
+            showOnSwitchMs = mkOption {
+              type = types.ints.positive;
+              default = 1200;
+              description = "How long, in milliseconds, the workspaces stay out after a switch.";
+            };
           };
 
           launcher = {

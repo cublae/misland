@@ -96,6 +96,9 @@ Singleton {
                 property real triggerLength: 0.35
                 // Workspaces always listed, even when empty.
                 property int persistentWorkspaces: 5
+                // Pop the workspaces out for a moment on every workspace switch.
+                property bool showOnSwitch: true
+                property int showOnSwitchMs: 1200
             }
 
             property JsonObject launcher: JsonObject {

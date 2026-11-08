@@ -41,6 +41,7 @@ history lives in the notch.
 **Corners.** Touch the top edge near a corner:
 - top-left: workspaces slide out to the right, each with the icons of its
   windows; click to switch, scroll to step through
+  (they also pop out for a moment whenever you switch workspaces)
 - top-right: the system tray slides out to the left; left, right and middle
   click and scrolling are passed to the apps
 
@@ -202,6 +203,8 @@ restart.
 | `edges.triggerSize` | `2` | Thickness in pixels of the hover strip along the top edge. |
 | `edges.triggerLength` | `0.35` | Length of each hover strip, as a fraction of the screen width from the corner. |
 | `edges.persistentWorkspaces` | `5` | Workspaces 1..N are always listed, even when empty. |
+| `edges.showOnSwitch` | `true` | Pop the workspaces out for a moment on every workspace switch. |
+| `edges.showOnSwitchMs` | `1200` | How long they stay out after a switch, in milliseconds. |
 | `launcher.maxResults` | `7` | Rows shown in the launcher. |
 | `launcher.terminal` | `["kitty", "-e"]` | Prefix for desktop entries with `Terminal=true`. |
 | `clipboard.watch` | `true` | Record clipboard history (`wl-paste --watch cliphist store`). Turn off if something else already feeds cliphist. |

@@ -2,6 +2,7 @@
 
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
 import qs.config
@@ -38,10 +39,26 @@ ShellRoot {
         active: root.primaryScreen !== null && Config.edges.workspaces
 
         sourceComponent: CornerPanel {
+            id: workspacesPanel
+
             screen: root.primaryScreen
             WlrLayershell.namespace: "misland-workspaces"
 
             Workspaces {}
+
+            // Pops out on workspace switches. The first value at startup is
+            // not a switch, so wait a moment before reacting.
+            property bool ready: false
+            Timer {
+                running: true
+                interval: 1500
+                onTriggered: workspacesPanel.ready = true
+            }
+            Connections {
+                target: Hyprland
+                enabled: workspacesPanel.ready && Config.edges.showOnSwitch
+                function onFocusedWorkspaceChanged() { workspacesPanel.peek(Config.edges.showOnSwitchMs); }
+            }
         }
     }
 

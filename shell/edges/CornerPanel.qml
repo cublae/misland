@@ -17,9 +17,23 @@ PanelWindow {
     // Extra height below the panel for things drawn under it (tooltips).
     property real overhang: 0
     default property alias content: holder.data
-    readonly property bool shown: hovering || keepOpen
+    readonly property bool shown: hovering || keepOpen || peeking
 
     property bool hovering: false
+    property bool peeking: false
+
+    // Show the panel for `ms` milliseconds without the pointer, e.g. when the
+    // workspace changes. Hovering it meanwhile keeps it open.
+    function peek(ms: int): void {
+        peeking = true;
+        peekTimer.interval = ms;
+        peekTimer.restart();
+    }
+
+    Timer {
+        id: peekTimer
+        onTriggered: win.peeking = false
+    }
 
     readonly property real s: Theme.s
     readonly property real pad: 10 * s
