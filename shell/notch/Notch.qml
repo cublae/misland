@@ -34,7 +34,10 @@ PanelWindow {
 
     anchors.top: true
     implicitWidth: Math.ceil((Math.max(expandedWidth, launcherWidth, clipboardWidth) + 2 * 16 * s) * overshoot)
-    implicitHeight: Math.ceil(Math.max(expandedHeight, launcherHeight, clipboardHeight) * overshoot)
+    // Fixed height: the expanded content grows with the notification history,
+    // and resizing the layer surface whenever a notification arrives stutters.
+    implicitHeight: Math.ceil(Math.max((screen?.height ?? 1080) * 0.85,
+        Math.max(expandedHeight, launcherHeight, clipboardHeight) * overshoot))
     color: "transparent"
 
     exclusionMode: ExclusionMode.Normal

@@ -9,7 +9,7 @@ import qs.services
 Column {
     id: root
 
-    readonly property int count: Notifications.history.length
+    readonly property int count: Notifications.count
     readonly property real maxListHeight: 230 * Theme.s
 
     visible: count > 0
@@ -61,7 +61,11 @@ Column {
         clip: true
         spacing: 6 * Theme.s
         boundsBehavior: Flickable.StopAtBounds
-        model: Notifications.history
+        // The model is oldest-first; laying it out bottom-to-top puts the
+        // newest on top. Start scrolled to the newest.
+        model: Notifications.tracked
+        verticalLayoutDirection: ListView.BottomToTop
+        onCountChanged: positionViewAtEnd()
 
         delegate: NotificationCard {
             required property var modelData

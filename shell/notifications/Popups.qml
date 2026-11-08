@@ -23,15 +23,14 @@ PanelWindow {
 
     anchors.top: true
     anchors.right: true
-    // Room on the left for the spring to overshoot.
-    implicitWidth: shape.width + 24 * s
-    implicitHeight: Math.max(1, shape.height)
+    // Fixed size, mapped once at startup: resizing a layer surface on every
+    // animation frame (or mapping it when the first popup arrives) stutters.
+    // Only the panel inside moves; the mask keeps the rest click-through.
+    // Width leaves room on the left for the spring to overshoot.
+    implicitWidth: Math.ceil(cardWidth + 2 * pad + 12 * s + 24 * s)
+    implicitHeight: Math.ceil((screen?.height ?? 1080) * 0.85)
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
-
-    // Bound to the model rather than to the view: views in a hidden window
-    // do not update, so they could never make it visible.
-    visible: Notifications.popups.count > 0
 
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "misland-notifications"
@@ -78,90 +77,99 @@ PanelWindow {
             }
         }
 
-        Column {
-            id: column
-
+        // Clips the cards to the panel's current, animated size, so text never
+        // shows outside the black background while the panel grows.
+        Item {
             // The body sits in the corner; the ear sticks out on the left.
-            x: shape.e + win.pad
-            y: win.pad
-            width: win.cardWidth
-            spacing: 2 * win.s
+            x: shape.e
+            width: shape.bodyWidth
+            height: shape.bodyHeight
+            clip: true
 
-            Repeater {
-                model: Notifications.popups
+            Column {
+                id: column
 
-                delegate: Item {
-                    id: slot
+                x: win.pad
+                y: win.pad
+                width: win.cardWidth
+                spacing: 2 * win.s
 
-                    required property int nid
-                    readonly property var notification: Notifications.find(nid)
-                    property bool leaving: false
-                    // Closed by the user: dismiss for good once the animation is done.
-                    property bool dismissAfter: false
+                Repeater {
+                    model: Notifications.popups
 
-                    function finish(): void {
-                        if (dismissAfter) notification?.dismiss();
-                        else Notifications.hidePopup(nid);
-                    }
+                    delegate: Item {
+                        id: slot
 
-                    width: column.width
-                    height: card.height
+                        required property int nid
+                        readonly property var notification: Notifications.find(nid)
+                        property bool leaving: false
+                        // Closed by the user: dismiss for good once the animation is done.
+                        property bool dismissAfter: false
 
-                    // The last popup leaves with the panel; others fade out.
-                    function leave(): void {
-                        if (leaving) return;
-                        leaving = true;
-                        if (Notifications.popups.count === 1) {
-                            win.closing = true;
-                            removeLater.start();
-                        } else {
-                            fade.start();
-                        }
-                    }
-
-                    Timer {
-                        id: removeLater
-                        interval: 450
-                        onTriggered: slot.finish()
-                    }
-
-                    NumberAnimation {
-                        id: fade
-                        target: card
-                        property: "opacity"
-                        to: 0
-                        duration: 200
-                        onFinished: slot.finish()
-                    }
-
-                    NotificationCard {
-                        id: card
-
-                        width: parent.width
-                        notification: slot.notification
-                        onCloseRequested: {
-                            slot.dismissAfter = true;
-                            slot.leave();
+                        function finish(): void {
+                            if (dismissAfter) notification?.dismiss();
+                            else Notifications.hidePopup(nid);
                         }
 
-                        opacity: 0
-                        Component.onCompleted: appear.start()
+                        width: column.width
+                        height: card.height
 
-                        NumberAnimation on opacity {
-                            id: appear
-                            running: false
-                            to: 1
-                            duration: 250
+                        // The last popup leaves with the panel; others fade out.
+                        function leave(): void {
+                            if (leaving) return;
+                            leaving = true;
+                            if (Notifications.popups.count === 1) {
+                                win.closing = true;
+                                removeLater.start();
+                            } else {
+                                fade.start();
+                            }
                         }
-                    }
 
-                    Timer {
-                        readonly property real seconds: slot.notification?.expireTimeout > 0
-                            ? Math.min(slot.notification.expireTimeout, 60) : Config.notifications.timeout
+                        Timer {
+                            id: removeLater
+                            interval: 450
+                            onTriggered: slot.finish()
+                        }
 
-                        interval: seconds * 1000
-                        running: !card.hovered && !slot.leaving && card.notification !== null && !card.critical
-                        onTriggered: slot.leave()
+                        NumberAnimation {
+                            id: fade
+                            target: card
+                            property: "opacity"
+                            to: 0
+                            duration: 200
+                            onFinished: slot.finish()
+                        }
+
+                        NotificationCard {
+                            id: card
+
+                            width: parent.width
+                            notification: slot.notification
+                            onCloseRequested: {
+                                slot.dismissAfter = true;
+                                slot.leave();
+                            }
+
+                            opacity: 0
+                            Component.onCompleted: appear.start()
+
+                            NumberAnimation on opacity {
+                                id: appear
+                                running: false
+                                to: 1
+                                duration: 250
+                            }
+                        }
+
+                        Timer {
+                            // expireTimeout comes in milliseconds, as on D-Bus; cap it at a minute.
+                            interval: slot.notification?.expireTimeout > 0
+                                ? Math.min(slot.notification.expireTimeout, 60000)
+                                : Config.notifications.timeout * 1000
+                            running: !card.hovered && !slot.leaving && card.notification !== null && !card.critical
+                            onTriggered: slot.leave()
+                        }
                     }
                 }
             }

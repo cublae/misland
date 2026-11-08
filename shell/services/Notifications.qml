@@ -11,7 +11,10 @@ import qs.config
 Singleton {
     id: root
 
-    readonly property list<Notification> history: server.trackedNotifications.values.slice().reverse()
+    // Oldest first, as the server keeps them. Views bind to the model itself
+    // so a new notification adds one delegate instead of rebuilding them all.
+    readonly property alias tracked: server.trackedNotifications
+    readonly property int count: server.trackedNotifications.values.length
     readonly property alias popups: popupModel
 
     // Notification exposes no arrival time, so keep one per id.
