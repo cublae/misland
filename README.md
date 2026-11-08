@@ -221,8 +221,8 @@ restart.
 | `clipboard.watch` | `true` | Record clipboard history (`wl-paste --watch cliphist store`). Turn off if something else already feeds cliphist. |
 | `clipboard.maxItems` | `100` | Entries listed in the clipboard view. |
 | `colorPicker.format` | `"hex"` | Format the colour picker copies: `hex`, `rgb`, `hsl`, `hsv` or `cmyk`. |
-| `animation.spring` | `3.6` | Spring stiffness. |
-| `animation.damping` | `0.55` | Spring damping, 0..1; lower values bounce more. |
+| `animation.spring` | `7.0` | Spring stiffness; higher is faster. |
+| `animation.damping` | `0.45` | Spring damping, 0..1; lower values bounce more. |
 
 home-manager also has:
 

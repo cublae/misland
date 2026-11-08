@@ -123,8 +123,8 @@ Singleton {
 
             property JsonObject animation: JsonObject {
                 // SpringAnimation parameters; lower damping = more bounce.
-                property real spring: 3.6
-                property real damping: 0.55
+                property real spring: 7.0
+                property real damping: 0.45
             }
         }
     }

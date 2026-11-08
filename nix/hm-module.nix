@@ -203,12 +203,12 @@ in
           animation = {
             spring = mkOption {
               type = types.float;
-              default = 3.6;
-              description = "Spring stiffness of the expand animation.";
+              default = 7.0;
+              description = "Spring stiffness of the expand animation; higher is faster.";
             };
             damping = mkOption {
               type = types.float;
-              default = 0.55;
+              default = 0.45;
               description = "Spring damping, 0..1; lower values bounce more.";
             };
           };
