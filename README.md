@@ -38,6 +38,14 @@ the top-right corner in a black corner panel, stack inside it, and leave
 after a timeout (hovering pauses it). Actions and inline links work. The
 history lives in the notch.
 
+**Do not disturb.** A button in the panel header (or `misland dnd`) hides
+popups; critical ones still show and everything lands in the history. It
+turns on by itself while the screen is being shared.
+
+**Privacy indicators.** The collapsed notch shows an orange microphone, a
+green camera or a blue screen-share icon while something records, and a red
+crossed-out bell while popups are silenced.
+
 **Corners.** Touch the top edge near a corner:
 - top-left: workspaces slide out to the right, each with the icons of its
   windows; click to switch, scroll to step through
@@ -159,6 +167,7 @@ misland toggle | open | close         the notch panel
 misland launcher [toggle|open|close]  the app launcher
 misland clipboard [toggle|open|close] the clipboard history
 misland color                         pick a colour from the screen
+misland dnd [toggle|on|off]            do not disturb
 ```
 
 Without the wrapper, use Quickshell IPC:
@@ -168,6 +177,7 @@ qs ipc -p /path/to/misland/shell call notch toggle
 qs ipc -p /path/to/misland/shell call launcher toggle
 qs ipc -p /path/to/misland/shell call clipboard toggle
 qs ipc -p /path/to/misland/shell call color pick
+qs ipc -p /path/to/misland/shell call dnd toggle
 ```
 
 ## Options
@@ -193,6 +203,7 @@ restart.
 | `power.poweroff` | `["systemctl", "poweroff"]` | Command for the power-off button. |
 | `notifications.timeout` | `5` | Seconds a popup stays when the app sets no timeout. Critical ones stay until closed. |
 | `notifications.maxHistory` | `50` | Notifications kept in the history. |
+| `notifications.autoDndOnScreenShare` | `true` | Hide popups while the screen is being shared. |
 | `activities.volume` | `true` | Live activity on volume changes. |
 | `activities.brightness` | `true` | Live activity on brightness changes. |
 | `activities.power` | `true` | Live activity when the charger is plugged in or out. |
@@ -210,8 +221,8 @@ restart.
 | `clipboard.watch` | `true` | Record clipboard history (`wl-paste --watch cliphist store`). Turn off if something else already feeds cliphist. |
 | `clipboard.maxItems` | `100` | Entries listed in the clipboard view. |
 | `colorPicker.format` | `"hex"` | Format the colour picker copies: `hex`, `rgb`, `hsl`, `hsv` or `cmyk`. |
-| `animation.spring` | `3.2` | Spring stiffness. |
-| `animation.damping` | `0.28` | Spring damping; lower values bounce more. |
+| `animation.spring` | `3.6` | Spring stiffness. |
+| `animation.damping` | `0.55` | Spring damping, 0..1; lower values bounce more. |
 
 home-manager also has:
 
@@ -232,7 +243,7 @@ shell/
   config/              Config (reads config.json), Theme
   components/          Icon, Label, Card, IconButton, Tile, PillSlider, ListRow
   services/            Time, Audio, Brightness, Battery, Media, SysStats, Apps,
-                       Hypr, BtIcons, Clipboard, ColorPicker,
+                       Hypr, BtIcons, Clipboard, ColorPicker, Privacy,
                        Notifications (daemon), Activity
   modules/             Calendar, MediaCard, QuickSettings, WifiMenu,
                        BluetoothMenu, Stats, PowerButtons, NotificationList

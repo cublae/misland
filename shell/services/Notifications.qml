@@ -17,6 +17,19 @@ Singleton {
     // Notification exposes no arrival time, so keep one per id.
     property var received: ({})
 
+    // Do not disturb: popups stay hidden (critical ones still show), the
+    // history keeps everything. Turns on by itself while the screen is shared.
+    property alias dnd: persist.dnd
+    readonly property bool autoDnd: Config.notifications.autoDndOnScreenShare && Privacy.screenSharing
+    readonly property bool quiet: dnd || autoDnd
+
+    PersistentProperties {
+        id: persist
+        reloadableId: "notifications"
+
+        property bool dnd: false
+    }
+
     function find(id: int): Notification {
         return server.trackedNotifications.values.find(n => n.id === id) ?? null;
     }
@@ -73,7 +86,8 @@ Singleton {
 
             // A replacement keeps its id; show it again instead of twice.
             root.removePopup(n.id);
-            popupModel.insert(0, { nid: n.id });
+            if (!root.quiet || n.urgency === NotificationUrgency.Critical)
+                popupModel.insert(0, { nid: n.id });
 
             const all = server.trackedNotifications.values;
             for (let i = 0; i < all.length - Config.notifications.maxHistory; i++) all[i].dismiss();

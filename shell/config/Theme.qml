@@ -18,6 +18,7 @@ Singleton {
     readonly property color danger: "#ff453a"
     readonly property color good: "#30d158"
     readonly property color warn: "#ffd60a"
+    readonly property color orange: "#ff9f0a"
 
     readonly property string font: "Inter"
     readonly property string iconFont: "Material Symbols Rounded"

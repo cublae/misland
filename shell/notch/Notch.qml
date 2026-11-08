@@ -83,6 +83,9 @@ PanelWindow {
         radius: (win.open ? 36 : 12) * win.s
         ear: (win.open ? 16 : 8) * win.s
 
+        minWidth: win.collapsedWidth
+        minHeight: win.collapsedHeight
+
         Behavior on bodyWidth { NotchSpring {} }
         Behavior on bodyHeight { NotchSpring {} }
         Behavior on radius { NotchSpring {} }
@@ -92,11 +95,11 @@ PanelWindow {
             id: mouse
 
             x: shape.e
-            width: shape.bodyWidth
+            width: shape.w
             // When expanded, only the header row closes the notch so the
             // modules below can handle their own clicks.
             height: win.launcher || win.clipboard ? 0
-                : win.expanded ? win.padding + expandedView.headerHeight : shape.bodyHeight
+                : win.expanded ? win.padding + expandedView.headerHeight : shape.h
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             onClicked: NotchState.toggle("panel")
@@ -106,8 +109,8 @@ PanelWindow {
             id: body
 
             x: shape.e
-            width: shape.bodyWidth
-            height: shape.bodyHeight
+            width: shape.w
+            height: shape.h
             clip: true
             focus: true
 

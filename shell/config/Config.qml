@@ -75,6 +75,8 @@ Singleton {
                 // Seconds a popup stays up when the app does not say.
                 property real timeout: 5
                 property int maxHistory: 50
+                // Hide popups while the screen is being shared.
+                property bool autoDndOnScreenShare: true
             }
 
             property JsonObject activities: JsonObject {
@@ -121,8 +123,8 @@ Singleton {
 
             property JsonObject animation: JsonObject {
                 // SpringAnimation parameters; lower damping = more bounce.
-                property real spring: 3.2
-                property real damping: 0.28
+                property real spring: 3.6
+                property real damping: 0.55
             }
         }
     }

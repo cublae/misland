@@ -107,6 +107,11 @@ in
               default = 50;
               description = "Notifications kept in the notch history.";
             };
+            autoDndOnScreenShare = mkOption {
+              type = types.bool;
+              default = true;
+              description = "Hide notification popups while the screen is being shared.";
+            };
           };
 
           activities =
@@ -198,13 +203,13 @@ in
           animation = {
             spring = mkOption {
               type = types.float;
-              default = 3.2;
+              default = 3.6;
               description = "Spring stiffness of the expand animation.";
             };
             damping = mkOption {
               type = types.float;
-              default = 0.28;
-              description = "Spring damping; lower values bounce more.";
+              default = 0.55;
+              description = "Spring damping, 0..1; lower values bounce more.";
             };
           };
         };

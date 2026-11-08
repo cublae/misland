@@ -10,7 +10,7 @@ let
     config=@out@/share/misland
     case "''${1:-}" in
       toggle|open|close) exec ${qs} ipc -p "$config" call notch "$1" ;;
-      launcher|clipboard) exec ${qs} ipc -p "$config" call "$1" "''${2:-toggle}" ;;
+      launcher|clipboard|dnd) exec ${qs} ipc -p "$config" call "$1" "''${2:-toggle}" ;;
       color) exec ${qs} ipc -p "$config" call color pick ;;
       "") exec ${qs} -n -p "$config" ;;
       *) exec ${qs} -p "$config" "$@" ;;
@@ -19,7 +19,7 @@ let
 in
 stdenvNoCC.mkDerivation {
   pname = "misland";
-  version = "0.6.0";
+  version = "0.7.0";
 
   src = ../shell;
   dontBuild = true;

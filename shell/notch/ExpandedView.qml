@@ -60,6 +60,20 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 2 * Theme.s
 
+                // Do not disturb: a red crossed-out bell while popups are silenced
+                // (by hand or by screen sharing), a plain bell otherwise. The
+                // red background marks the manual switch.
+                IconButton {
+                    anchors.verticalCenter: parent.verticalCenter
+                    icon: Notifications.quiet ? "notifications_off" : "notifications"
+                    iconSize: 19 * Theme.s
+                    filled: Notifications.quiet
+                    highlighted: Notifications.dnd
+                    highlightColor: Qt.alpha(Theme.danger, 0.2)
+                    iconColor: Notifications.quiet ? Theme.danger : Theme.textDim
+                    onClicked: Notifications.dnd = !Notifications.dnd
+                }
+
                 IconButton {
                     anchors.verticalCenter: parent.verticalCenter
                     icon: "colorize"

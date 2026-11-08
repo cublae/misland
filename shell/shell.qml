@@ -106,6 +106,14 @@ ShellRoot {
     }
 
     IpcHandler {
+        target: "dnd"
+
+        function toggle(): void { Notifications.dnd = !Notifications.dnd; }
+        function on(): void { Notifications.dnd = true; }
+        function off(): void { Notifications.dnd = false; }
+    }
+
+    IpcHandler {
         target: "color"
 
         function pick(): void { ColorPicker.pick(); }
