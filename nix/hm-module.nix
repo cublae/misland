@@ -205,10 +205,10 @@ in
       enable = mkOption {
         type = types.bool;
         default = true;
-        description = 
+        description = ''
           Start Misland as a systemd user service with the graphical session.
           Turn off to start it from the Hyprland config instead (`misland`).
-        ;
+        '';
       };
       target = mkOption {
         type = types.str;
